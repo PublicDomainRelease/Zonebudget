@@ -1,6 +1,4 @@
 
-
-
 zonebudget(1)      U.S. Geological Survey (wrdapp)      zonebudget(1)
 
 
@@ -23,6 +21,10 @@ METHOD
        cells in each specified zone.
 
 HISTORY
+       Version 2.1 2000/04/18 - updated to allow specifiers for opening
+          unformatted files to be easily modified.  The personal computer
+          version of the code is being distributed using unstructured
+          unformatted files.
        Version 2.0 2000/04/24 - updated to read compact budget files that
           MODFLOW-96 and MODFLOW-2000 can optionally write.  Compact budget
           files use less disk space.  They also include additional information

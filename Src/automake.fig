@@ -1,8 +1,8 @@
-NOQUITONERROR
+QUITONERROR
 
 FILES=*.for
-COMPILE=@lf90 -nchk -nsav -stchk -winconsole -c %fi
+COMPILE=@lf95 -c -nchk -pca -stchk -trace -w %fi -winconsole
 
-LINK=@lf90 @%rf -exe %ex -winconsole
+LINK=@lf95 @%rf -exe %ex -winconsole
 TARGET=zonbud.exe
 

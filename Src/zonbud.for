@@ -6,6 +6,9 @@ C
 C     This program is documented in USGS Open-File Report 90-392,
 C     written by Arlen W. Harbaugh
 C
+C     April, 2001 -- Updated to use openspec.inc to define specifiers
+C     for the OPEN statement for unformatted files.
+C
 C     Jan. 29, 2000 -- Updated to work with MODFLOW's COMPACT BUDGET
 C     option.
 C     ******************************************************************
@@ -25,11 +28,10 @@ C-----   MXCOMP is the maximum number of composite zones, and must be
 C-----          less than 81.
 C-----   MXZWCZ is the maximum number of numeric zones within each
 C-----          composite zone.
-C      COMMON /BUFCOM/BUFF
-C      COMMON /ZONCOM/IZONE
-C      COMMON /CHCOM/ICH
-C      COMMON /IBFCOM/IBUFF
-      COMMON BUFF,IZONE,ICH,IBUFF
+      COMMON /BUFCOM/BUFF
+      COMMON /ZONCOM/IZONE
+      COMMON /CHCOM/ICH
+      COMMON /IBFCOM/IBUFF
       DIMENSION BUFF(NODDIM),IZONE(NODDIM),ICH(NODDIM),IBUFF(NODDIM),
      1          VBVL(2,NTRDIM,NZDIM),VBZNFL(2,0:NZDIM,0:NZDIM)
       DIMENSION ICOMP(MXZWCZ,MXCOMP),NZWCZ(MXCOMP)
@@ -41,8 +43,9 @@ C      COMMON /IBFCOM/IBUFF
       CHARACTER*1 METHOD,IANS
       CHARACTER*40 VERSON
       DIMENSION VAL(10)
+      INCLUDE 'openspec.inc'
 C     ------------------------------------------------------------------
-      VERSON='ZONEBUDGET version 2.00'
+      VERSON='ZONEBUDGET version 2.1'
 C
 C-----DEFINE INPUT AND OUTPUT UNITS AND INITIALIZE OTHER VARIABLES
       INZN1=10
@@ -81,7 +84,8 @@ C-----OPEN THE CELL-BY-CELL BUDGET FILE
 10    WRITE(*,*) ' Enter the name of the file containing CELL-BY-CELL BU
      1DGET TERMS:'
       READ(*,'(A)') NAME
-      OPEN(UNIT=INBUD,FILE=NAME,STATUS='OLD',FORM='UNFORMATTED',ERR=10)
+      OPEN(UNIT=INBUD,FILE=NAME,STATUS='OLD',FORM=FORM,ACCESS=ACCESS,
+     1               ERR=10)
       WRITE(IOUT,*)
       WRITE(IOUT,*) ' The cell-by-cell budget file is:'
       WRITE(IOUT,*) NAME
@@ -937,13 +941,9 @@ C-----COMPUTE TOTAL INS AND OUTS
 150   CONTINUE
 C
 C-----CALCULATE THE DIFFERENCE BETWEEN IN AND OUT AND THE PERCENT ERROR
-      IF(TOTIN.EQ.ZERO .AND. TOTOUT.EQ.ZERO) THEN
-         TOTBD=ZERO
-         PERCNT=ZERO
-      ELSE
-         TOTBD=TOTIN-TOTOUT
-         PERCNT=DHUN*TOTBD/((TOTIN+TOTOUT)/DTWO)
-      END IF
+      IF(TOTIN.EQ.ZERO .AND. TOTOUT.EQ.ZERO) GO TO 500
+      TOTBD=TOTIN-TOTOUT
+      PERCNT=DHUN*TOTBD/((TOTIN+TOTOUT)/DTWO)
 C
 C
 C     ---PRINT BUDGET---

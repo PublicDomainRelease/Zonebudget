@@ -1,7 +1,4 @@
-                                                            April 24, 2000
-
-
-               Zonebudget (ZONBUD) - Version: 2.0 2000/04/24
+               Zonebudget (ZONBUD) - Version: 2.1  April, 2001
               Program for computing subregional water budgets
                     for MODFLOW ground-water flow models
 
@@ -33,19 +30,19 @@ The following self-extracting distribution file, containing the software,
 test data sets, and information files, is currently available for
 Microsoft Windows computer systems:
 
-         znbd2_0.exe  - Compiled using Lahey Fortran 90 with source code
+         znbd2_1.exe  - Compiled using Lahey Fortran 95 with source code
 
 The program source code consists of the following file (found in the
-ZONBUD.2_0\src directory):
+ZONBUD.2_1\src directory):
 
     ZONBUD.for
 
 Also included in the src directory are several files used by the Lahey
 Automake utility for compiling the program.
 
-File ZONBUD.2_0/doc/zonbud.txt describes the changes to version 1.0 of
-the code, which result in version 2.0. Also included in directory
-ZONBUD.2_0/doc is a Portable Document Format (PDF) version of the
+File ZONBUD.2_1/doc/zonbud.txt describes the changes to the code,
+since the original version (1.0). Also included in directory
+ZONBUD.2_1/doc is a Portable Document Format (PDF) version of the
 ZONEBUDGET documentatoin (ofr90392.pdf).
 
 The PDF file is readable and printable on various computer platforms using
@@ -55,19 +52,14 @@ the following World Wide Web sites:
       http://www.shareware.com/
 
 
-
-
 B. EXTRACTING FILES
 
 The following are the steps to extract the files from the distribution
-file.  Note, replace <disk drive> with the drive letter where you want
-to install ZONBUD and optionally replace [directory] with the name of a
-directory on that drive:
-
+file.
 
    1. Extract the files by executing file:
 
-        znbd2_0.exe
+        znbd2_1.exe
 
       When the extraction progrm runs, specify that the files should be
       restored to directory C:\WRDAPP
@@ -76,7 +68,7 @@ directory on that drive:
 The following directory structure will be created in C:\WRDAPP (the
 contents of each directory are shown to the right):
 
-      ZONBUD.2_0      ; copy of this readme file
+      ZONBUD.2_1      ; copy of this readme file
         `-----bin       ; compiled executable and Lahey error file
         `-----doc       ; documentation files
         `-----src       ; makefile and source code
@@ -84,10 +76,8 @@ contents of each directory are shown to the right):
         `-----data      ; standard data sets used in verification tests
 
 Notes:
-a) It is recommended that no user files are kept in the ZONBUD.2_0
-   directory structure.  If you do plan to put files in the ZONBUD.2_0
-   directory structure, do so only by creating subdirectories of
-   ZONBUD.2_0.
+a) It is recommended that no user files are kept in the ZONBUD.2_1
+   directory structure.
 
 
 C. COMPILING
@@ -96,8 +86,8 @@ An executable version of the code for personal computers is provided in
 the bin directory; however, the source code is also provided in the src
 directory so that users can generate the executable themselves. No
 support can be provided for users generating their own versions of the
-software.  In general, the requirements are a Fortran compiler and a
-of using the compiler.
+software.  In general, the requirements are a Fortran compiler and
+knowledge about using the compiler.
 
 
 
@@ -105,34 +95,12 @@ D: INSTALLING
 
 To make the ZONBUD program accessible from any directory, the directory
 containing the executable should be included in the PATH environment
-variable.  For example, you could add a line similar to the following
-to the AUTOEXEC.BAT file:
-
-  PATH=%PATH%;C:\WRDAPP\ZONBUD.2_0\bin
-
-Note, substitute the appropriate drive letter and pathname if not C:\
-as shown above.
-
-As an alternative, the ZONBUD executable can be moved to a directory
-already included in the PATH environment variable.
-
+variable.
 
 
 E. RUNNING THE SOFTWARE
 
-        **System Requirements**
-        - 486-based or higher personal computer with math co-processor
-          running a Microsoft Windows operating system.
-        - 16 MB application RAM
-        - 5 MB hard disk space
-
-ZONBUD has been compiled using the Lahey Fortran 90 extended memory
-compiler version 4.50i.  The file "LF90.EER" (from the Lahey compiler)
-located in ZONBUD.2_0\bin contains error messages.  If an error occurs,
-this file is used to print error messages if the ZONBUD.2_0\bin directory
-is included in the PATH environment variable; if LF90.ERR cannot be found,
-the error will only be identified by number.
-
+ZONBUD has been compiled using the Lahey Fortran 95 compiler version 5.6e.
 The program arrays are dimensioned for models having up to 1,000,000 cells.
 
 After ZONBUD is properly installed in a directory that is included in
@@ -143,15 +111,33 @@ program prompts for the following information:
      3) TITLE for use in LISTING FILE
      4) an option for specifying when budgets are calculated
 
+The runfile for version 2.1 of ZONBUD for use on personal computers has
+been created using the LF95 compiler options that will allow ZONBUD to
+read the unstructured unformatted budget files created by the runfile
+for version 1.2 of MODFLOW-2000 (MF2K.EXE) that is distributed by the
+USGS on the web. Other compilers could be used to compile ZONBUD and
+MF2K provided that they cause unformatted files to be written in the
+same unstructured manner.  However, if options are used that cause a
+compiler to generate structured binary files, then it is generally
+necessary that ZONBUD be compiled with the same compiler used to
+compile MODFLOW.
+
+Starting with MODFLOW-2000 version 1.2, the USGS-distributed MODFLOW
+runfile for personal computers is compiled by the Lahey 95 compiler
+using the above-mentioned options for writing unstructured unformatted
+files.  If you are using an earlier version of a MODFLOW runfile
+produced by the USGS, then ZONBUD will not be able to read the
+unformatted budget files.
+
 
 F. TESTING
 
 Test data sets are provided to verify that the program is correctly
 installed and running on the system.  The tests may also be looked at
-as examples of how to use the program.  The directory ZONBUD.2_0\test
-contains batch files to run the tests.  The directory ZONBUD.2_0\data
+as examples of how to use the program.  The directory ZONBUD.2_1\test
+contains batch files to run the tests.  The directory ZONBUD.2_1\data
 contains the input data and expected results for each test.  Run the
-tests in the ZONBUD.2_0\test directory using the command:
+tests in the ZONBUD.2_1\test directory using the command:
 
    test
 
@@ -165,19 +151,23 @@ program is the program used to run the test, and the usage column
 indicates how a file is used, with i for input, o for output, and
 i/o for both input and output.
 
-IMPORTANT NOTE: use zbtest.nam and associated files to generate the cell-
-by-cell flow data (zbtest.bud) using MODFLOW.  The zbtest.bud is a binary 
-file that must be generated for each platform.  The one provided was 
-generated on a Pentium personal computer.  The test.bat file does not run 
-MODFLOW to generate the zbtest.bud, you must do this on your own.
+IMPORTANT NOTE: the cell-by-cell data file (zbtest.bud) was generated
+using mf2k version 1.2 as distributed on the USGS web page. The input
+data for MODFLOW are in zbtest.nam and associated files.  zbtest.bud is
+an unformatted file that is compiler and platform dependent; therefore,
+if you compile ZONBUD with a different compiler, you may need to
+recreate the budget file using a version of MODFLOW compiled with the
+same compiler.  The test.bat file does not run MODFLOW to
+generate the zbtest.bud; you must do this on your own.
 
 test  program  description of test and files      file name & usage
 ----  -------  ---------------------------------  -----------------
   1   modflow  Runs the example problem in OFR 90-392
 
                Name File to designate files       zbtest.nam      i
-               BAS5 Package                       zbtest.bas      i
-               BCF5 Package                       zbtest.bcf      i
+               BAS6 Package                       zbtest.ba6      i
+               BCF6 Package                       zbtest.bc6      i
+               Discretization file                zbtest.dis      i
                SIP5 Package                       zbtest.sip      i
                Output Control                     zbtest.oc       i
                RCH5 Package                       zbtest.rch      i
