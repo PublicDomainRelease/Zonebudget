@@ -1,0 +1,198 @@
+
+
+
+zonebdgt(1)      U.S. Geological Survey (wrdapp)      zonebdgt(1)
+
+
+NAME
+       zonebdgt - Program for computing subregional water budgets for
+                  MODFLOW ground-water flow models
+
+ABSTRACT
+       Zonebudget (ZONEBDGT) is a computer program that computes
+       subregional water budgets using results from the MODFLOW ground-
+       water flow model.  The user designates the subregions by specifying
+       zone numbers.  A separate budget is computed for each zone.  The
+       budget for a zone includes a component of flow between each adjacent
+       zone.
+
+METHOD
+       ZONEBDGT reads a file of budget data that MODFLOW can write.  This
+       file must contain values for each flow component at every model
+       cell.  ZONEBDGT then accumulates each flow component for all the
+       cells in each specified zone.
+
+HISTORY
+       Version 1.0 1996/12/20 - version published in USGS OFR 90-392.  Note
+          that this version will not work with cell-by-cell budget files
+          that are written using the optional compact format available in
+          MODFLOW-96.  That is, to use ZONEBDGT version 1.0 with
+          MODFLOW-96, the compact cell-by-cell budget option must NOT be
+          used.
+
+DATA REQUIREMENTS
+       In order to use ZONEBDGT, all cell-by-cell budget terms for a
+       MODFLOW simulation must be saved in a file when MODFLOW is executed.
+       The cell-by-cell budget file must be written in the format used by
+       MODFLOW-88 (as opposed to the COMPACT format, which is a new option
+       in MODFLOW-96).  Depending on the specific zones that are desired, a
+       zone file must also be prepared.
+
+OUTPUT OPTIONS
+       The output is a listing file that contains a flow budget for each
+       zone.
+
+SYSTEM REQUIREMENTS
+       ZONEBDGT is written in Fortran 77.  By default, the software is
+       dimensioned for use with models having up to 90,000 cells.
+       Generally, the program is easily installed on most computer systems.
+       The code has been used on UNIX-based computers and DOS-based 386 or
+       greater computers having a math coprocessor and 2 mb of memory.
+
+DOCUMENTATION
+       Harbaugh, A.W., 1990, A computer program for calculating subregional
+          water budgets using results from the U.S. Geological Survey
+          modular three-dimensional ground-water flow model: U.S.
+          Geological Survey Open-File Report 90-392, 46 p.
+
+RELATED DOCUMENTATION
+       McDonald, M.G., and Harbaugh, A.W., 1988, A modular three-
+          dimensional finite-difference ground-water flow model: U.S.
+
+
+
+                           27 May 1997                          1
+
+
+
+
+
+zonebdgt(1)      U.S. Geological Survey (wrdapp)      zonebdgt(1)
+
+
+          Geological Survey Techniques of Water-Resources Investigations,
+          book 6, chap. A1, 586 p.
+
+       Harbaugh, A.W., 1990, A simple contouring program for gridded data:
+          U.S. Geological Survey Open-File Report 90-144, 37 p.
+
+       Harbaugh, A.W., and McDonald, M.G., 1996, User's documentation for
+          MODFLOW-96, an update to the U.S. Geological Survey modular
+          finite-difference ground-water flow model: U.S. Geological Survey
+          Open-File Report 96-485, 56 p.
+
+TRAINING
+       Modeling of Ground-Water Flow Using Finite-Difference Methods
+       (GW2096TC), offered annually at the USGS National Training Center,
+       makes use of ZONEBDGT.
+
+CONTACTS
+       Operation:
+          U.S. Geological Survey
+          Office of Ground Water
+          Arlen Harbaugh
+          411 National Center
+          Reston, VA 20192
+
+          harbaugh@usgs.gov
+
+       Distribution:
+          U.S. Geological Survey
+          Hydrologic Analysis Software Support Team
+          David Boldt
+          437 National Center
+          Reston, VA 20192
+
+          h2osoft@usgs.gov
+
+       Official versions of U.S. Geological Survey water-resources analysis
+       software are available for electronic retrieval via the World Wide
+       Web (WWW) at:
+
+                  http://water.usgs.gov/software/
+
+       and via anonymous File Transfer Protocol (FTP) from:
+
+                  water.usgs.gov (path: /pub/software).
+
+       The WWW page and anonymous FTP directory from which the ZONEBDGT
+       software can be retrieved are, respectively:
+
+                  http://water.usgs.gov/software/zonebdgt.html
+                                --and--
+                  /pub/software/ground_water/zonebdgt
+
+       If you would like to obtain the price of and (or) order paper copies
+       of USGS reports, contact the USGS Branch of Information Services at:
+
+
+
+                           27 May 1997                          2
+
+
+
+
+
+zonebdgt(1)      U.S. Geological Survey (wrdapp)      zonebdgt(1)
+
+
+                  U.S. Geological Survey
+                  Branch of Information Services
+                  Denver Federal Center, Box 25286
+                  Denver CO 80225-0286
+
+       To inquire about Open-File Reports or Water-Resources Investigations
+       Reports:
+                  Tel: 303-202-4210; Fax 303-202-4695
+
+       To inquire about other USGS reports:
+                  Tel: 303-202-4700; Fax 303-202-4693
+
+SEE ALSO
+       contour(1) - A contouring program for gridded data
+       modflow(1) - Modular three-dimensional ground-water flow
+                    model
+       Modflowp(1) - Parameter-estimation version of the modular model
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                           27 May 1997                          3
+
+

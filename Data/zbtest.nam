@@ -1,0 +1,9 @@
+LIST 6 zbtest_m.lst
+BAS 5 zbtest.bas
+BCF 11 zbtest.bcf
+WEL 12 zbtest.wel
+DRN 13 zbtest.drn
+RCH 18 zbtest.rch
+SIP 19 zbtest.sip
+OC  22 zbtest.oc
+DATA(BINARY) 30 zbtest.bud

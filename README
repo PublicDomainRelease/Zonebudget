@@ -1,16 +1,20 @@
-                                                             May 28, 1997
+                                                            May 28, 1997
 
 
                      ZONEBDGT - Version: 1.0 1996/12/20
-              Program for computing subregional water budgets 
+              Program for computing subregional water budgets
                     for MODFLOW ground-water flow models
 
-
-For assistance, enhancement requests, or bug reports contact the Hydrologic 
-Analysis Software Support Team via email at h2osoft@usgs.gov.  See the file 
-doc/zonedbgt.txt for descriptions, references, and additional contacts for 
+For assistance, enhancement requests, or bug reports contact the Hydrologic
+Analysis Software Support Team via email at h2osoft@usgs.gov.  See the file
+doc/zonedbgt.txt for descriptions, references, and additional contacts for
 this software.  Instructions for installation, execution, and testing are 
 provided below.
+
+This version of ZONEBDGT is packaged for use on personal computers
+using the DOS operating system.  The installation procedures and the
+compiled version of ZONEBDGT must be run using either DOS directly or
+a DOS window within Microsoft Windows, Windows 95, or Windows NT.
 
 
                             TABLE OF CONTENTS
@@ -25,24 +29,23 @@ provided below.
 
 A. FILES
 
-The following distribution packages (containing the software, test data sets, 
-and information files) are currently available for UNIX systems:
+The following self-extracting DOS distribution files (containing the software,
+test data sets, and information files) are currently available for DOS
+computer systems:
 
-  zonebdgt.1_0.DGUX.tar.gz    - Compiled for Data General AViiON under DG/UX 5.4
-  zonebdgt.1_0.Solaris.tar.gz - Compiled for Sun UltraSPARC 2 under Solaris 2.5
-  zonebdgt.1_0.SGI.tar.gz     - Compiled for Silicon Graphics Indigo (32-bit)  
-                                under Irix Release 6.0.1
-  zonebdgt.1_0.source.tar.gz  - Source code
+         znbd1_0.exe  - Compiled using Lahey Fortran 90 with source code
+         znbd1_0b.exe - Compiled using Lahey Fortran 90 (binaries only)
+         znbd1_0s.exe - Source code
 
-For use on Data General workstations, the program source code consists of the
-following files (found in the zonebdgt.1_0/src directory):
+For use on personal computers, the program source code consists of the
+following files (found in the zonebdgt.1_0\src directory):
 
-    zonebdgt.f
-    Makefile -- input instructions to the UNIX "make" utility for
+    zonebdgt.for
+    Makefile -- input instructions to the Lahey "make" utility for
                 compiling ZONEBDGT
 
 Included in directory zonebdgt.1_0/doc is a Portable Document Format (PDF)
-version of the ZONEBUDGET documentatoin (ofr90392.pdf).  A PostScript 
+version of the ZONEBUDGET documentatoin (ofr90392.pdf).  A PostScript
 version of this report is available from:
       http://water.usgs.gov/software/zonebdgt.html
 
@@ -58,118 +61,136 @@ and by File Transfer Protocol (FTP) from the following site:
 
 B. EXTRACTING FILES
 
-The compressed tar file, named zonebdgt.1_0.OS.tar.gz, contains all the files
-needed to install and test ZONEBDGT on a computer with a particular operating
-system, where OS is a string indicating the operating system the distribution
-is intended for.  If a version is not available for your operating system, the
-file zonebdgt.1_0.source.tar.gz contains the source code and all other files
-needed to compile, install, and test the software on a UNIX-based computer.
-For either type of distribution, the directory zonebdgt.1_0 is created (or
-overwritten) when the files are extracted from the tar file.  If the 
-zonebdgt.1_0 directory already exists, you may want to delete or rename it 
-before extracting the files.  The following are the steps to extract the files
-from a distribution tar file.
+For whichever ZONEBDGT distribution file that you have acquired, znbd1_0.exe,
+znbd1_0b.exe, or znbd1_0s.exe, the directory zonebdgt.1_0 is created (or
+overwritten) when the files are extracted.  If the zonebdgt.1_0 directory
+already exists, you may want to delete or rename it before extracting the
+files.  The following are the steps to extract the files from a distribution
+file.  Note, replace <disk drive> with the drive letter where you want to
+install ZONEBDGT and optionally replace [directory] with the name of a
+directory on that drive:
 
-   1. If the tar file is not already in the directory under which you want
-      the distribution installed, move it there.  For example:
-         mv zonebdgt.1_0.____.tar.gz /usr/opt/wrdapp
+   1. If you are not in the directory where the distribution file is
+      located, go there.  For example (if already on the C disk drive):
 
-   2. If you are not in the directory where the tar file is located, go
-      there.  For example:
-         cd /usr/opt/wrdapp
+         cd c:\wrdapp
 
-   3. Uncompress the distribution file.  For example:
-         gunzip zonebdgt.1_0.____.tar.gz
+   2. Extract the files using the command:
 
-   4. Extract the distribution files from the tar file.  For example:
-         tar -xof zonebdgt.1_0.___.tar
+        znbd1_0 -d -o <disk drive>:\[directory]
 
-      This creates the following directory structure (the contents of each
-      directory are shown to the right):
+      Substitute "znbd1_0b" or "znbd1_0s" for "znbd1_0" if you are
+      installing the executable-code-only or source-code distributions,
+      respectively.  Note, be sure to include the -d (restore directory
+      structure) and -o (overwrite existing files) options and ":\" in 
+      the command.  Examples are:
 
-      zonebdgt.1_0       ; copy of this README file
-        `-----bin        ; compiled executable
-        `-----doc        ; documentation files (manual page, documentation)
-        `-----src        ; Makefile and source code
-        `-----test       ; scripts to run verification tests
-        `-----data       ; standard data sets used in verification tests
+         znbd1_0 -d -o c:\
+
+         znbd1_0 -d -o c:\wrdapp
+
+The following directory structure will be created (the contents of each
+directory are shown to the right):
+
+      zonebdgt.1_0      ; copy of this readme file
+        `-----bin       ; compiled executable and Lahey error file
+        `-----doc       ; documentation files
+        `-----src       ; makefile and source code
+        `-----test      ; batch files to run verification tests
+        `-----data      ; standard data sets used in verification tests
 
 Notes:
-a) The bin directory is not included in the zonebdgt.1_0.source.tar.gz
-   distribution (it is created during compilation).
-b) Source code is included only with the zonebdgt.1_0.source.tar.gz
-   distribution.
-c) It is recommended that no user files be kept in the zonebdgt.1_0 directory
-   structure.  If you do plan to put files in the zonebdgt.1_0 directory
-   structure, do so only by creating subdirectories of zonebdgt.1_0.
+a) The executable is not included in the znbd1_0s.exe distribution file.
+b) The source code is not included in the znbd1_0b.exe distribution file.
+c) It is recommended that no user files are kept in the zonebdgt.1_0
+   directory structure.  If you do plan to put files in the zonebdgt.1_0
+   directory structure, do so only by creating subdirectories of
+   zonebdgt.1_0.
+d) Brackets "[xxx]" are used to indicate optional arguments to commands.
 
 
 C. COMPILING
 
-If a compiled version of the software is not available for your computer, or
-if you want to build the executable yourself, follow the instructions in this
-section.  If you have retrieved a pre-compiled distribution of the software,
-skip to the Installing section below.
-
-The source code is provided in the zonebdgt.1_0.source.tar.gz distribution so
-that users can generate the executable themselves.  No support can be
-provided for users generating their own versions of the software.  In general,
-the requirements are a Fortran compiler and a minimal level of knowledge of
-the compiler and the UNIX operating system.  As provided, the Makefile and
-source code are set up for use on Data General AViiON workstations running
-the DG/UX operating system.
+The source code is provided in the znbd1_0.exe and znbd1_0s.exe distribution
+files so that users can generate the executable themselves.  No support can
+be provided for users generating their own versions of the software.  In
+general, the requirements are a Fortran compiler and a minimal level of
+knowledge of the compiler and the DOS operating system.  As provided, the
+makefile and source code are optimized for use on a Pentium personal
+computer using the Lahey Fortran 90 compiler and supplied make program.
 
 To generate a new executable, do the following:
 
    1. Change directory to the source directory:
-         cd zonebdgt.1_0/src
+         cd zonebdgt.1_0\src
 
-   2. Modify the beginning of the file named Makefile to correctly specify 
-      system-dependent variables:
-        
-         F77          Fortran compiler name
+   2. Modify the beginning of the file named makefile to correctly
+      specify system-dependent variables:
+
          FFLAGS       Fortran compiler flags
-    
-   3. Use the make program to initiate compilation of the source code and
-      installation of the software:
-         make [BINDIR=directory_for_links]
+         FC           Fortran compiler name
+         LINKER       Fortran linker name
+         LNKFLGS      Fortran linker flags
+
+   3. Use the make program to initiate compilation of the source code
+      and installation of the software:
+
+         make [BINDIR=directory_for_executable]
 
       See the Installing instructions below for an explanation of BINDIR.
 
       The make will:
-         a. create the directories zonebdgt.1_0/bin and BINDIR if they do not
-            already exist,
+         a. create the directory zonebdgt.1_0\bin if it does not exist,
          b. compile the source code,
-         c. place the executable (zonebdgt) in zonebdgt.1_0/bin, and
-         d. place a link to the executable in BINDIR if specified.
+         c. place the executable (zonebdgt.exe) in zonebdgt.1_0\bin, and
+         d. place a copy of the executable in BINDIR if specified.
 
 
-D. INSTALLING
+D: INSTALLING
 
-To make the executable (zonebdgt) easy to use, it should be installed in a
-directory included in the user's search path.  The Makefile (input instructions
-to the UNIX make program--located in zonebdgt.1_0/src) contains instructions to
-optionally place a link in a specified directory to the executable contained in
-zonebdgt.1_0/bin.  Use the following two commands to do this:
+To make the ZONEBDGT program accessible from any directory, the directory
+containing the executable should be included in the PATH environment
+variable.  For example, you could add a line similar to the following
+to the AUTOEXEC.BAT file:
 
-       cd zonebdgt.1_0/src
-       make install [BINDIR=directory_for_links]
+  PATH=%PATH%;C:\zonebdgt.1_0\bin
 
-If BINDIR is specified, a link to the executable is placed in the specified
-directory.  For example, if your search path consists of:
-       /usr/bin:/usr/opt/bin:/usr/local/bin
-use the command:
-       make install BINDIR=/usr/local/bin
-to make the executable accessible from any directory without requiring the full
-pathname of the software's location.
+Note, substitute the appropriate drive letter and pathname if not C:\
+as shown above.
 
-Notes:
-a) Brackets "[xxx]" are used to indicate optional arguments to commands.
-b) To create and delete a link to the ZONEBDGT executable file, the installer
-   must have sufficient rights in the directory that BINDIR is set to.
+As an alternative, the ZONEBDGT executable can be installed in a directory
+already included in the PATH environment variable.  The makefile (input
+instructions to the Lahey make program--located in zonebdgt.1_0\src) contains
+instructions to optionally place a copy of the executable contained in
+zonebdgt.1_0\bin in a specified directory.  Use the following two commands to
+do this:
+
+       cd zonebdgt_source_directory
+       make install BINDIR=directory_for_executable
+
+For example:
+
+       cd C:\zonebdgt.1_0\src
+       make install BINDIR=C:\wrdapp\bin
+
+Note, the makefile may need to be modified to be used with make programs
+other than the Lahey make program.
 
 
 E. RUNNING THE SOFTWARE
+
+        **System Requirements**
+        - 386-based or higher personal computer with math co-processor
+          running DOS.
+        - 5 MB application RAM
+        - 5 MB hard disk space
+
+ZONEBDGT has been compiled using the Lahey Fortran 90 extended memory
+compiler version 3.00f.  The file "LF90.EER" (from the Lahey compiler)
+located in zonebdgt.1_0\bin contains error messages.  If an error occurs,
+this file is used to print error messages if the zonebdgt.1_0\bin directory
+is included in the PATH environment variable; if LF90.ERR cannot be found,
+the error will only be identified by number.
 
 The program arrays are dimensioned for models having up to 300,000 cells.
 
@@ -184,50 +205,30 @@ program prompts for the following information:
 
 F. TESTING
 
-A test data set is provided to verify that the program is correctly installed
-and running on the system.  The tests may also be looked at as examples of how
-to use the program.  The directory "zonebdgt.1_0/test" contains the scripts to
-run the tests.  The directory "zonebdgt.1_0/data" contains the input data and
-expected results for each test.  Tests must be run in the directory
-"zonebdgt.1_0/test".  Run the tests using any of the commands in the table
-below.
+Test data sets are provided to verify that the program is correctly
+installed and running on the system.  The tests may also be looked at
+as examples of how to use the program.  The directory zonebdgt.1_0\test
+contains batch files to run the tests.  The directory zonebdgt.1_0\data
+contains the input data and expected results for each test.  Run the
+tests in the zonebdgt.1_0\test directory using the command:
 
-To test the installation, change to the zonebdgt.1_0/test directory and type the
-command:
-      ./test.sh [m [n]]
+   test
 
-where:
-     m = the number of the first test to perform, default=1
-     n = the number of the last test to perform, default=6
+After the tests are completed, the results can be compared to the
+expected results.  To clean-up after the tests, type the command:
 
-For example:
+   clean
 
-command                         what happens
-------------------      ------------------------------------
-./test.sh               runs all of the tests
-./test.sh n             runs test 'n' through the last test
-./test.sh n m           runs test 'n' through 'm'
+The tests are described in the table below.  Test is the test number,
+program is the program used to run the test, and the usage column
+indicates how a file is used, with i for input, o for output, and
+i/o for both input and output.
 
-After the tests are completed, the results are compared to the expected
-results.  If all goes well, the only differences will be due to different
-processing times or pathnames.  To clean up after the tests, type the
-command:
-      ./clean.sh
-
-NOTE: the standard data sets were created on a Data General AViiON workstation.
-You may notice slight numeric differences in the results on other computers.
-These are generally due to different round-off algorithms and the different
-architecture of the central processing unit chip.
-
-The tests are described in the table below.  Test is the test number, program
-is the program used to run the test, and the usage column indicates how a file
-is used, with i for input, o for output, and i/o for both input and output.
-
-IMPORTANT NOTE: use zbtest.nam and associate files to generate the cell-by-cell
-flow data (zbtest.bud) using MODFLOW.  The zbtest.bud is a binary file that 
-must be generated for each platform.  The one provided was generated on a Data
-General AViiON workstation.  The test.sh script does not run MODFLOW to 
-generate the zbtest.bud, you must do this on your own.
+IMPORTANT NOTE: use zbtest.nam and associated files to generate the cell-
+by-cell flow data (zbtest.bud) using MODFLOW.  The zbtest.bud is a binary 
+file that must be generated for each platform.  The one provided was 
+generated on a Pentium personal computer.  The test.bat file does not run 
+MODFLOW to generate the zbtest.bud, you must do this on your own.
 
 test  program  description of test and files      file name & usage
 ----  -------  ---------------------------------  -----------------
