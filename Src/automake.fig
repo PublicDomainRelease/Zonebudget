@@ -1,0 +1,8 @@
+NOQUITONERROR
+
+FILES=*.for
+COMPILE=@lf90 -nchk -nsav -stchk -winconsole -c %fi
+
+LINK=@lf90 @%rf -exe %ex -winconsole
+TARGET=zonbud.exe
+

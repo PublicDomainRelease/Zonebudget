@@ -2,7 +2,7 @@
 cls
 echo.
 echo.
-echo A test of ZONEBDGT will be performed using data from the
+echo A test of ZONBUD will be performed using data from the
 echo ..\data directory.  Iinformation will be sent to the screen
 echo which you may ignore, unless the tests abort with an error
 echo message.  You must be in DOS mode for the test to run.
@@ -19,4 +19,4 @@ echo Test data for running ZONEBUDGET >> go
 echo ..\data\zbtest.zon >> go
 echo A >> go
 
-..\bin\zonebdgt.exe < go
+..\bin\zonbud.exe < go

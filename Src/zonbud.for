@@ -5,9 +5,12 @@ C     Three-Dimensional Finite-Difference Ground-Water Flow Model.
 C
 C     This program is documented in USGS Open-File Report 90-392,
 C     written by Arlen W. Harbaugh
+C
+C     Jan. 29, 2000 -- Updated to work with MODFLOW's COMPACT BUDGET
+C     option.
 C     ******************************************************************
 C        SPECIFICATIONS:
-      PARAMETER (NODDIM=300000,NTRDIM=12,NZDIM=25,MXCOMP=25,MXZWCZ=10)
+      PARAMETER (NODDIM=1000000,NTRDIM=50,NZDIM=25,MXCOMP=25,MXZWCZ=10)
 C-----   NODDIM must be greater than or equal to the product of the
 C-----          number of layers, rows, and columns in the model grid.
 C-----   NTRDIM must be greater than or equal to the number of budget
@@ -22,29 +25,24 @@ C-----   MXCOMP is the maximum number of composite zones, and must be
 C-----          less than 81.
 C-----   MXZWCZ is the maximum number of numeric zones within each
 C-----          composite zone.
-      COMMON /BUFCOM/BUFF
-      COMMON /ZONCOM/IZONE
-      COMMON /CHCOM/ICH
-      DIMENSION BUFF(NODDIM),IZONE(NODDIM),ICH(NODDIM),
+C      COMMON /BUFCOM/BUFF
+C      COMMON /ZONCOM/IZONE
+C      COMMON /CHCOM/ICH
+C      COMMON /IBFCOM/IBUFF
+      COMMON BUFF,IZONE,ICH,IBUFF
+      DIMENSION BUFF(NODDIM),IZONE(NODDIM),ICH(NODDIM),IBUFF(NODDIM),
      1          VBVL(2,NTRDIM,NZDIM),VBZNFL(2,0:NZDIM,0:NZDIM)
       DIMENSION ICOMP(MXZWCZ,MXCOMP),NZWCZ(MXCOMP)
       DOUBLE PRECISION VBVL,VBZNFL
       DIMENSION ITIME(2,10)
       CHARACTER*80 TITLE
       CHARACTER*80 NAME
-      CHARACTER*16 VBNM(NTRDIM),TEXT
+      CHARACTER*16 VBNM(NTRDIM),TEXT,CTMP
       CHARACTER*1 METHOD,IANS
+      CHARACTER*40 VERSON
+      DIMENSION VAL(10)
 C     ------------------------------------------------------------------
-C     set string for use if RCS ident command
-      NAME =
-     &'$Id: zonebdgt.f,v 1.0 1996/12/20 13:40:08 rsregan Exp rsregan $'
-      NAME = 
-     &'@(#)ZONEBDGT - Program for computing subregional water budgets'
-      NAME = '@(#)           for results of MODFLOW simulations'
-      NAME = '@(#)ZONEBDGT - USGS Open File Report 90-392, Harbaugh'
-      NAME = '@(#)ZONEBDGT - Contact: h2osoft@usgs.gov'
-      NAME = '@(#)ZONEBDGT - Version: 1.0x 1996/12/20'
-C     ------------------------------------------------------------------
+      VERSON='ZONEBUDGET version 2.00'
 C
 C-----DEFINE INPUT AND OUTPUT UNITS AND INITIALIZE OTHER VARIABLES
       INZN1=10
@@ -55,10 +53,13 @@ C-----DEFINE INPUT AND OUTPUT UNITS AND INITIALIZE OTHER VARIABLES
       K2=0
       NZONES=0
       MSUM=0
+      ZERO=0.0
+      NLIST=0
+      NVAL=1
 C
 C-----TELL THE USER WHAT THIS PROGRAM IS
       WRITE(*,*)
-      WRITE(*,*) ' ZONEBUDGET version 1.00'
+      WRITE(*,'(1X,A)') VERSON
       WRITE(*,*) ' Program to compute a flow budget for subregions of a 
      1model using'
       WRITE(*,*) ' cell-by-cell flow data from the USGS Modular Ground-W
@@ -69,8 +70,8 @@ C-----OPEN A LISTING FILE
 3     WRITE(*,*) ' Enter the name of a LISTING FILE for results:'
       READ(*,'(A)') NAME
       OPEN(UNIT=IOUT,FILE=NAME,ERR=3)
-      WRITE(IOUT,4)
-4     FORMAT(1H ,'ZONEBUDGET version 1.00'/
+      WRITE(IOUT,4) VERSON
+4     FORMAT(1X,/,1X,A/
      1' Program to compute a flow budget for subregions of a model using
      2'/' cell-by-cell flow data from the USGS Modular Ground-Water Flow
      3 Model.')
@@ -87,6 +88,7 @@ C-----OPEN THE CELL-BY-CELL BUDGET FILE
 C
 C-----READ GRID SIZE FROM BUDGET FILE AND REWIND
       READ(INBUD,END=2000) KSTP,KPER,TEXT,NCOL,NROW,NLAY
+      IF(NLAY.LT.0) NLAY=-NLAY
       REWIND(UNIT=INBUD)
       WRITE(*,*)
       WRITE(*,14) NLAY,NROW,NCOL
@@ -95,7 +97,8 @@ C-----READ GRID SIZE FROM BUDGET FILE AND REWIND
 14    FORMAT(1X,I3,' layers',I10,' rows',I10,' columns')
 C
 C-----CHECK TO SEE IF NODIM IS LARGE ENOUGH
-      NODES=NCOL*NROW*NLAY
+      NRC=NROW*NCOL
+      NODES=NRC*NLAY
       IF(NODES.GT.NODDIM) THEN
          WRITE(*,*) ' PROGRAM ARRAYS ARE DIMENSIONED TOO SMALL'
          WRITE(*,*) ' PARAMETER NODDIM IS CURRENTLY',NODDIM
@@ -185,6 +188,20 @@ C
 C-----READ BUDGET DATA AND ACCUMULATE AS LONG AS TIME REMAINS CONSTANT.
 C-----WHEN TIME CHANGES, PRINT THE BUDGET, REINITIALIZE, AND START OVER
 100   READ(INBUD,END=1000) KSTP,KPER,TEXT,NC,NR,NL
+      ITYPE=0
+      IF(NL.LT.0) THEN
+         READ(INBUD) ITYPE,DELT,PERTIM,TOTIM
+         NVAL=1
+         IF(ITYPE.EQ.5) THEN
+            READ(INBUD) NVAL
+            IF(NVAL.GT.1) THEN
+               DO 101 N=2,NVAL
+               READ(INBUD) CTMP
+101            CONTINUE
+            END IF
+         END IF
+         IF(ITYPE.EQ. 2 .OR. ITYPE.EQ.5) READ(INBUD) NLIST
+      END IF
 C
 C-----CHECK IF STARTING A NEW TIME STEP
       IF(K1.NE.KSTP .OR. K2.NE.KPER) THEN
@@ -237,12 +254,12 @@ C-----DECIDE WHETHER OR NOT TO CALCULATE THE BUDGET FOR THIS TIME STEP
             DO 210 I=1,NZONES
             DO 210 J=1,NTRDIM
             DO 210 K=1,2
-            VBVL(K,J,I)=0.
+            VBVL(K,J,I)=ZERO
 210         CONTINUE
             DO 220 I=0,NZONES
             DO 220 J=0,NZONES
             DO 220 K=1,2
-            VBZNFL(K,J,I)=0.
+            VBZNFL(K,J,I)=ZERO
 220         CONTINUE
             WRITE(*,221) KSTP,KPER
 221         FORMAT(' Computing the budget for time step',I3,
@@ -250,8 +267,38 @@ C-----DECIDE WHETHER OR NOT TO CALCULATE THE BUDGET FOR THIS TIME STEP
          END IF
       END IF
 C
-C-----READ A BUDGET TERM
-      READ(INBUD) (BUFF(I),I=1,NODES)
+C-----READ THE BUDGET TERM DATA UNDER THE FOLLOWING CONDITIONS:
+      IF(ITYPE.EQ.0 .OR. ITYPE.EQ.1) THEN
+C  FULL 3-D ARRAY
+         READ(INBUD) (BUFF(I),I=1,NODES)
+      ELSE IF(ITYPE.EQ.3) THEN
+C  1-LAYER ARRAY WITH LAYER INDICATOR ARRAY
+         DO 260 I=1,NODES
+         BUFF(I)=ZERO
+260      CONTINUE
+         READ(INBUD) (IBUFF(I),I=1,NRC)
+         READ(INBUD) (BUFF(I),I=1,NRC)
+         DO 270 I=1,NRC
+         IF(IBUFF(I).NE.1) THEN
+            LAYMOV=(IBUFF(I)-1)*NRC
+            BUFF(LAYMOV+I)=BUFF(I)
+            BUFF(I)=ZERO
+         END IF
+270      CONTINUE
+      ELSE IF(ITYPE.EQ.4) THEN
+C  1-LAYER ARRAY THAT DEFINES LAYER 1
+         READ(INBUD) (BUFF(I),I=1,NRC)
+         IF(NODES.GT.NRC) THEN
+            DO 280 I=NRC+1,NODES
+            BUFF(I)=ZERO
+280         CONTINUE
+         END IF
+      ELSE IF(ICALC.EQ.0 .AND. NLIST.GT.0) THEN
+C  LIST -- READ ONLY IF THE VALUES NEED TO BE SKIPPED
+         DO 300 N=1,NLIST
+         READ(INBUD) LOC,(VAL(I),I=1,NVAL)
+300      CONTINUE
+      END IF
 C
 C-----BEFORE PROCESSING A BUDGET TERM, CHECK IF THERE IS ENOUGH SPACE
       IF(MSUM.GT.NTRDIM) THEN
@@ -264,7 +311,8 @@ C-----BEFORE PROCESSING A BUDGET TERM, CHECK IF THERE IS ENOUGH SPACE
 C
 C-----PROCESS A BUDGET TERM AND THEN START THE READ PROCESS OVER
       IF(ICALC.NE.0) CALL ACCM(BUFF,IZONE,ICH,NCOL,NROW,NLAY,VBNM,VBVL,
-     1           VBZNFL,MSUM,TEXT,NTRDIM,NZDIM,MSUMCH)
+     1           VBZNFL,MSUM,TEXT,NTRDIM,NZDIM,MSUMCH,
+     2           ITYPE,NLIST,INBUD,NVAL)
       GO TO 100
 C
 C  PRINT BUDGET BECAUSE END OF FILE WAS REACHED
@@ -405,7 +453,7 @@ C
 C-----PRINT EACH ROW IN THE ARRAY.
       DO 430 I=1,NROW
       WRITE(IOUT,423) I,(IZONE(J,I,K),J=1,NCOL)
-423   FORMAT(1H0,I3,1X,25I3/(5X,25I3))
+423   FORMAT(1X,I3,1X,25I3/(5X,25I3))
 430   CONTINUE
 C
 1000  CONTINUE
@@ -532,7 +580,8 @@ C
 C
       END
       SUBROUTINE ACCM(BUFF,IZONE,ICH,NCOL,NROW,NLAY,VBNM,VBVL,VBZNFL,
-     1                MSUM,TEXT,NTRDIM,NZDIM,MSUMCH)
+     1                MSUM,TEXT,NTRDIM,NZDIM,MSUMCH,
+     2                ITYPE,NLIST,INBUD,NVAL)
 C     ******************************************************************
 C     ACCUMULATE VOLUMETRIC BUDGET FOR ZONES
 C     ******************************************************************
@@ -541,7 +590,10 @@ C     ******************************************************************
      2  ICH(NCOL,NROW,NLAY)
       DOUBLE PRECISION VBVL,VBZNFL,DBUFF
       CHARACTER*16 VBNM(NTRDIM),TEXT
+      DIMENSION VAL(10)
 C     ------------------------------------------------------------------
+      ZERO=0.0
+      NRC=NROW*NCOL
 C
 C-----CHECK FOR INTERNAL FLOW TERMS, WHICH ARE USED TO CALCULATE FLOW
 C-----BETWEEN ZONES, AND CONSTANT-HEAD TERMS
@@ -552,20 +604,42 @@ C-----BETWEEN ZONES, AND CONSTANT-HEAD TERMS
 C
 C-----NOT AN INTERNAL FLOW TERM, SO MUST BE A SOURCE TERM OR STORAGE
 C-----ACCUMULATE THE FLOW BY ZONE
-      DO 100 K=1,NLAY
-      DO 100 I=1,NROW
-      DO 100 J=1,NCOL
-      NZ=IZONE(J,I,K)
-      IF(NZ.EQ.0) GO TO 100
-      RBUFF=BUFF(J,I,K)
-      DBUFF=RBUFF
-      IF(RBUFF.EQ.0.) THEN
-      ELSE IF(RBUFF.LT.0.) THEN
-         VBVL(2,MSUM,NZ)=VBVL(2,MSUM,NZ)-DBUFF
+      IF(ITYPE.EQ.2 .OR. ITYPE.EQ.5) THEN
+C  LIST
+         IF(NLIST.GT.0) THEN
+            DO 80 N=1,NLIST
+            READ(INBUD) ICELL,(VAL(I),I=1,NVAL)
+            K= (ICELL-1)/NRC + 1
+            I= ( (ICELL - (K-1)*NRC)-1 )/NCOL +1
+            J= ICELL - (K-1)*NRC - (I-1)*NCOL
+            NZ=IZONE(J,I,K)
+            IF(NZ.EQ.0) GO TO 80
+            RBUFF=VAL(1)
+            DBUFF=RBUFF
+            IF(RBUFF.EQ.ZERO) THEN
+            ELSE IF(RBUFF.LT.ZERO) THEN
+               VBVL(2,MSUM,NZ)=VBVL(2,MSUM,NZ)-DBUFF
+            ELSE
+               VBVL(1,MSUM,NZ)=VBVL(1,MSUM,NZ)+DBUFF
+            END IF
+80          CONTINUE
+         END IF
       ELSE
-         VBVL(1,MSUM,NZ)=VBVL(1,MSUM,NZ)+DBUFF
+         DO 100 K=1,NLAY
+         DO 100 I=1,NROW
+         DO 100 J=1,NCOL
+         NZ=IZONE(J,I,K)
+         IF(NZ.EQ.0) GO TO 100
+         RBUFF=BUFF(J,I,K)
+         DBUFF=RBUFF
+         IF(RBUFF.EQ.ZERO) THEN
+         ELSE IF(RBUFF.LT.ZERO) THEN
+            VBVL(2,MSUM,NZ)=VBVL(2,MSUM,NZ)-DBUFF
+         ELSE
+            VBVL(1,MSUM,NZ)=VBVL(1,MSUM,NZ)+DBUFF
+         END IF
+  100    CONTINUE
       END IF
-  100 CONTINUE
 C
 C-----SAVE THE TERM NAME AND KEEP TRACK OF THE NUMBER OF TERMS
       VBNM(MSUM)=TEXT
@@ -574,15 +648,32 @@ C-----SAVE THE TERM NAME AND KEEP TRACK OF THE NUMBER OF TERMS
 C
 C-----CONSTANT-HEAD FLOW -- DON'T ACCUMULATE THE CELL-BY-CELL VALUES FOR
 C-----CONSTANT-HEAD FLOW BECAUSE THEY MAY INCLUDE PARTIALLY CANCELING
-C-----INS AND OUTS.  USE CONSTANT-HEAD TERMS TO IDENTIFY WHERE CONSTANT-
+C-----INS AND OUTS.  USE CONSTANT-HEAD TERM TO IDENTIFY WHERE CONSTANT-
 C-----HEAD CELLS ARE AND THEN USE FACE FLOWS TO DETERMINE THE AMOUNT OF
 C-----FLOW.  STORE CONSTANT-HEAD LOCATIONS IN ICH ARRAY.
-200   DO 250 K=1,NLAY
-      DO 250 I=1,NROW
-      DO 250 J=1,NCOL
-      ICH(J,I,K)=0
-      IF(BUFF(J,I,K).NE.0.) ICH(J,I,K)=1
-250   CONTINUE
+200   IF(ITYPE.EQ.2 .OR. ITYPE.EQ.5) THEN
+         DO 240 K=1,NLAY
+         DO 240 I=1,NROW
+         DO 240 J=1,NCOL
+         ICH(J,I,K)=0
+240      CONTINUE
+         IF(NLIST.GT.0) THEN
+            DO 250 N=1,NLIST
+            READ(INBUD) ICELL,(VAL(I),I=1,NVAL)
+            K= (ICELL-1)/NRC + 1
+            I= ( (ICELL - (K-1)*NRC)-1 )/NCOL +1
+            J= ICELL - (K-1)*NRC - (I-1)*NCOL
+            ICH(J,I,K)=1
+250         CONTINUE
+         END IF
+      ELSE
+         DO 260 K=1,NLAY
+         DO 260 I=1,NROW
+         DO 260 J=1,NCOL
+         ICH(J,I,K)=0
+         IF(BUFF(J,I,K).NE.ZERO) ICH(J,I,K)=1
+260      CONTINUE
+      END IF
       VBNM(MSUM)=TEXT
       MSUMCH=MSUM
       MSUM=MSUM+1
@@ -600,9 +691,11 @@ C-----1ST, CALCULATE FLOW BETWEEN NODE J,I,K AND J-1,I,K
       JL=J-1
       NZL=IZONE(JL,I,K)
       IF(NZL.LE.NZ) GO TO 340
+C  Don't include CH to CH flow (can occur if CHTOCH option is used)
+      IF(ICH(J,I,K).EQ.1 .AND. ICH(J-1,I,K).EQ.1) GO TO 340
       RBUFF=BUFF(JL,I,K)
       DBUFF=RBUFF
-      IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.LT.ZERO) THEN
          VBZNFL(2,NZ,NZL)=VBZNFL(2,NZ,NZL)-DBUFF
       ELSE
          VBZNFL(1,NZ,NZL)=VBZNFL(1,NZ,NZL)+DBUFF
@@ -617,9 +710,11 @@ C-----FLOW BETWEEN NODE J,I,K AND J+1,I,K
       JR=J+1
       NZR=IZONE(JR,I,K)
       IF(NZR.LE.NZ) GO TO 370
+C  Don't include CH to CH flow (can occur if CHTOCH option is used)
+      IF(ICH(J,I,K).EQ.1 .AND. ICH(J+1,I,K).EQ.1) GO TO 370
       RBUFF=BUFF(J,I,K)
       DBUFF=RBUFF
-      IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.LT.ZERO) THEN
          VBZNFL(1,NZ,NZR)=VBZNFL(1,NZ,NZR)-DBUFF
       ELSE
          VBZNFL(2,NZ,NZR)=VBZNFL(2,NZ,NZR)+DBUFF
@@ -633,19 +728,22 @@ C-----CALCULATE FLOW TO CONSTANT-HEAD CELLS IN THIS DIRECTION
       IF(ICH(J,I,K).EQ.0) GO TO 395
       NZ=IZONE(J,I,K)
       IF(NZ.EQ.0) GO TO 395
+      IF(J.EQ.NCOL) GO TO 380
+      IF(ICH(J+1,I,K).EQ.1) GO TO 380
       RBUFF=BUFF(J,I,K)
       DBUFF=RBUFF
-      IF(RBUFF.EQ.0.) THEN
-      ELSE IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.EQ.ZERO) THEN
+      ELSE IF(RBUFF.LT.ZERO) THEN
          VBVL(2,MSUMCH,NZ)=VBVL(2,MSUMCH,NZ)-DBUFF
       ELSE
          VBVL(1,MSUMCH,NZ)=VBVL(1,MSUMCH,NZ)+DBUFF
       END IF
-      IF(J.EQ.1) GO TO 395
+380   IF(J.EQ.1) GO TO 395
+      IF(ICH(J-1,I,K).EQ.1) GO TO 395
       RBUFF=BUFF(J-1,I,K)
       DBUFF=RBUFF
-      IF(RBUFF.EQ.0.) THEN
-      ELSE IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.EQ.ZERO) THEN
+      ELSE IF(RBUFF.LT.ZERO) THEN
          VBVL(1,MSUMCH,NZ)=VBVL(1,MSUMCH,NZ)-DBUFF
       ELSE
          VBVL(2,MSUMCH,NZ)=VBVL(2,MSUMCH,NZ)+DBUFF
@@ -663,9 +761,11 @@ C-----CALCULATE FLOW BETWEEN NODE J,I,K AND J,I-1,K
       IA=I-1
       NZA=IZONE(J,IA,K)
       IF(NZA.LE.NZ) GO TO 440
+C  Don't include CH to CH flow (can occur if CHTOCH option is used)
+      IF(ICH(J,I,K).EQ.1 .AND. ICH(J,I-1,K).EQ.1) GO TO 440
       RBUFF=BUFF(J,IA,K)
       DBUFF=RBUFF
-      IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.LT.ZERO) THEN
          VBZNFL(2,NZ,NZA)=VBZNFL(2,NZ,NZA)-DBUFF
       ELSE
          VBZNFL(1,NZ,NZA)=VBZNFL(1,NZ,NZA)+DBUFF
@@ -680,9 +780,11 @@ C-----CALCULATE FLOW BETWEEN NODE J,I,K AND J,I+1,K
       IB=I+1
       NZB=IZONE(J,IB,K)
       IF(NZB.LE.NZ) GO TO 470
+C  Don't include CH to CH flow (can occur if CHTOCH option is used)
+      IF(ICH(J,I,K).EQ.1 .AND. ICH(J,I+1,K).EQ.1) GO TO 470
       RBUFF=BUFF(J,I,K)
       DBUFF=RBUFF
-      IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.LT.ZERO) THEN
          VBZNFL(1,NZ,NZB)=VBZNFL(1,NZ,NZB)-DBUFF
       ELSE
          VBZNFL(2,NZ,NZB)=VBZNFL(2,NZ,NZB)+DBUFF
@@ -696,19 +798,22 @@ C-----CALCULATE FLOW TO CONSTANT-HEAD CELLS IN THIS DIRECTION
       IF(ICH(J,I,K).EQ.0) GO TO 495
       NZ=IZONE(J,I,K)
       IF(NZ.EQ.0) GO TO 495
+      IF(I.EQ.NROW) GO TO 480
+      IF(ICH(J,I+1,K).EQ.1) GO TO 480
       RBUFF=BUFF(J,I,K)
       DBUFF=RBUFF
-      IF(RBUFF.EQ.0.) THEN
-      ELSE IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.EQ.ZERO) THEN
+      ELSE IF(RBUFF.LT.ZERO) THEN
          VBVL(2,MSUMCH,NZ)=VBVL(2,MSUMCH,NZ)-DBUFF
       ELSE
          VBVL(1,MSUMCH,NZ)=VBVL(1,MSUMCH,NZ)+DBUFF
       END IF
-      IF(I.EQ.1) GO TO 495
+480   IF(I.EQ.1) GO TO 495
+      IF(ICH(J,I-1,K).EQ.1) GO TO 495
       RBUFF=BUFF(J,I-1,K)
       DBUFF=RBUFF
-      IF(RBUFF.EQ.0.) THEN
-      ELSE IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.EQ.ZERO) THEN
+      ELSE IF(RBUFF.LT.ZERO) THEN
          VBVL(1,MSUMCH,NZ)=VBVL(1,MSUMCH,NZ)-DBUFF
       ELSE
          VBVL(2,MSUMCH,NZ)=VBVL(2,MSUMCH,NZ)+DBUFF
@@ -726,9 +831,11 @@ C-----CALCULATE FLOW BETWEEN NODE J,I,K AND J,I,K-1
       KA=K-1
       NZA=IZONE(J,I,KA)
       IF(NZA.LE.NZ) GO TO 540
+C  Don't include CH to CH flow (can occur if CHTOCH option is used)
+      IF(ICH(J,I,K).EQ.1 .AND. ICH(J,I,K-1).EQ.1) GO TO 540
       RBUFF=BUFF(J,I,KA)
       DBUFF=RBUFF
-      IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.LT.ZERO) THEN
          VBZNFL(2,NZ,NZA)=VBZNFL(2,NZ,NZA)-DBUFF
       ELSE
          VBZNFL(1,NZ,NZA)=VBZNFL(1,NZ,NZA)+DBUFF
@@ -743,9 +850,11 @@ C-----CALCULATE FLOW BETWEEN NODE J,I,K AND J,I,K+1
       KB=K+1
       NZB=IZONE(J,I,KB)
       IF(NZB.LE.NZ) GO TO 570
+C  Don't include CH to CH flow (can occur if CHTOCH option is used)
+      IF(ICH(J,I,K).EQ.1 .AND. ICH(J,I,K+1).EQ.1) GO TO 570
       RBUFF=BUFF(J,I,K)
       DBUFF=RBUFF
-      IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.LT.ZERO) THEN
          VBZNFL(1,NZ,NZB)=VBZNFL(1,NZ,NZB)-DBUFF
       ELSE
          VBZNFL(2,NZ,NZB)=VBZNFL(2,NZ,NZB)+DBUFF
@@ -759,19 +868,22 @@ C-----CALCULATE FLOW TO CONSTANT-HEAD CELLS IN THIS DIRECTION
       IF(ICH(J,I,K).EQ.0) GO TO 595
       NZ=IZONE(J,I,K)
       IF(NZ.EQ.0) GO TO 595
+      IF(K.EQ.NLAY) GO TO 580
+      IF(ICH(J,I,K+1).EQ.1) GO TO 580
       RBUFF=BUFF(J,I,K)
       DBUFF=RBUFF
-      IF(RBUFF.EQ.0.) THEN
-      ELSE IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.EQ.ZERO) THEN
+      ELSE IF(RBUFF.LT.ZERO) THEN
          VBVL(2,MSUMCH,NZ)=VBVL(2,MSUMCH,NZ)-DBUFF
       ELSE
          VBVL(1,MSUMCH,NZ)=VBVL(1,MSUMCH,NZ)+DBUFF
       END IF
-      IF(K.EQ.1) GO TO 595
+580   IF(K.EQ.1) GO TO 595
+      IF(ICH(J,I,K-1).EQ.1) GO TO 595
       RBUFF=BUFF(J,I,K-1)
       DBUFF=RBUFF
-      IF(RBUFF.EQ.0.) THEN
-      ELSE IF(RBUFF.LT.0.) THEN
+      IF(RBUFF.EQ.ZERO) THEN
+      ELSE IF(RBUFF.LT.ZERO) THEN
          VBVL(1,MSUMCH,NZ)=VBVL(1,MSUMCH,NZ)-DBUFF
       ELSE
          VBVL(2,MSUMCH,NZ)=VBVL(2,MSUMCH,NZ)+DBUFF
@@ -791,6 +903,7 @@ C       SPECIFICATIONS:
       CHARACTER*16 VBNM(NTRDIM)
       CHARACTER*80 TITLE
 C     ------------------------------------------------------------------
+      ZERO=0.0
 C
 C-----THE NUMBER OF FLOW TERMS OTHER THAN FLOW BETWEEN ZONES IS MSUM-1
       MTOT=MSUM-1
@@ -812,8 +925,8 @@ C-----FOR EACH ZONE, CALCULATE BUDGET TOTALS AND PRINT
 C
 C
 C-----COMPUTE TOTAL INS AND OUTS
-      TOTOUT=0.
-      TOTIN=0.
+      TOTOUT=ZERO
+      TOTIN=ZERO
       DO 100 I=1,MTOT
       TOTIN=TOTIN+VBVL(1,I,N)
       TOTOUT=TOTOUT+VBVL(2,I,N)
@@ -824,15 +937,19 @@ C-----COMPUTE TOTAL INS AND OUTS
 150   CONTINUE
 C
 C-----CALCULATE THE DIFFERENCE BETWEEN IN AND OUT AND THE PERCENT ERROR
-      IF(TOTIN.EQ.0. .AND. TOTOUT.EQ.0.) GO TO 500
-      TOTBD=TOTIN-TOTOUT
-      PERCNT=DHUN*TOTBD/((TOTIN+TOTOUT)/DTWO)
+      IF(TOTIN.EQ.ZERO .AND. TOTOUT.EQ.ZERO) THEN
+         TOTBD=ZERO
+         PERCNT=ZERO
+      ELSE
+         TOTBD=TOTIN-TOTOUT
+         PERCNT=DHUN*TOTBD/((TOTIN+TOTOUT)/DTWO)
+      END IF
 C
 C
 C     ---PRINT BUDGET---
 C
 C-----PRINT THE TITLE
-      WRITE(IOUT,'(1H1,A)') TITLE
+      WRITE(IOUT,'(1H1,/1X,A)') TITLE
       WRITE(IOUT,*)
       WRITE(IOUT,601) N,KSTP,KPER
 C
@@ -843,7 +960,7 @@ C-----PRINT THE IN TERMS
       WRITE(IOUT,603) VBNM(I),VBVL(1,I,N)
 200   CONTINUE
       DO 250 I=0,NZONES
-      IF(VBZNFL(1,N,I).NE.0. .OR. VBZNFL(2,N,I).NE.0.)
+      IF(VBZNFL(1,N,I).NE.ZERO .OR. VBZNFL(2,N,I).NE.ZERO)
      1                    WRITE(IOUT,609) I,N,VBZNFL(1,N,I)
 250   CONTINUE
       WRITE(IOUT,*)
@@ -856,7 +973,7 @@ C-----PRINT THE OUT TERMS
       WRITE(IOUT,603) VBNM(I),VBVL(2,I,N)
 300   CONTINUE
       DO 350 I=0,NZONES
-      IF(VBZNFL(1,N,I).NE.0. .OR. VBZNFL(2,N,I).NE.0.)
+      IF(VBZNFL(1,N,I).NE.ZERO .OR. VBZNFL(2,N,I).NE.ZERO)
      1                    WRITE(IOUT,609) N,I,VBZNFL(2,N,I)
 350   CONTINUE
       WRITE(IOUT,*)
@@ -875,7 +992,7 @@ C
 C    ---FORMATS---
 C
   601 FORMAT(5X,'Flow Budget for Zone',I3,
-     1  ' at Time Step'I3,' of Stress Period',I3/5X,59('-'))
+     1  ' at Time Step',I3,' of Stress Period',I3/5X,59('-'))
   602 FORMAT(23X,'Budget Term',5X,'Flow (L**3/T)'/
      1     23X,29('-')//13X,'IN:'/13X,'---')
   603 FORMAT(18X,A,' =',G14.5)
@@ -948,7 +1065,7 @@ C
 C-----PRINT BUDGET---
 C
 C-----PRINT THE TITLE
-      WRITE(IOUT,'(1H1,A)') TITLE
+      WRITE(IOUT,'(1H1,/1X,A)') TITLE
       WRITE(IOUT,*)
       WRITE(IOUT,601) ALPHA(M:M),KSTP,KPER
       WRITE(IOUT,*)
@@ -1033,7 +1150,7 @@ C
 C    ---FORMATS---
 C
   601 FORMAT(5X,'Flow Budget for Composite Zone ',A,
-     1  ' at Time Step'I3,' of Stress Period',I3/5X,68('-'))
+     1  ' at Time Step',I3,' of Stress Period',I3/5X,68('-'))
   602 FORMAT(23X,'Budget Term',5X,'Flow (L**3/T)'/
      1     23X,29('-')//13X,'IN:'/13X,'---')
   603 FORMAT(18X,A,' =',G14.5)

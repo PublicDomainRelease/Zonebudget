@@ -1,4 +1,5 @@
- ZONEBUDGET version 1.00
+
+ ZONEBUDGET version 2.00                 
  Program to compute a flow budget for subregions of a model using
  cell-by-cell flow data from the USGS Modular Ground-Water Flow Model.
 
@@ -18,21 +19,21 @@
 
        1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
  -------------------------------------------------------------------------------
-0  1   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0  2   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0  3   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0  4   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0  5   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0  6   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0  7   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0  8   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0  9   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0 10   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0 11   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0 12   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0 13   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0 14   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-0 15   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+   1   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+   2   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+   3   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+   4   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+   5   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+   6   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+   7   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+   8   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+   9   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+  10   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+  11   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+  12   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+  13   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+  14   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+  15   4  1  1  1  1  1  1  1  1  1  1  1  1  1  1
 
  Zone Array for layer  2 will be read from the Zone File
  Zone Array for layer  2 will be read using format: (15I2)              
@@ -40,27 +41,28 @@
 
        1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
  -------------------------------------------------------------------------------
-0  1   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0  2   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0  3   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0  4   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0  5   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0  6   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0  7   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0  8   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0  9   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0 10   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0 11   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0 12   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0 13   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0 14   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
-0 15   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+   1   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+   2   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+   3   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+   4   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+   5   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+   6   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+   7   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+   8   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+   9   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+  10   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+  11   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+  12   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+  13   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+  14   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+  15   4  2  2  2  2  2  2  2  2  2  2  2  2  2  2
 
              Zone Array =  3 for layer  3
 
    1 Composite Zones:
  Composite Zone A:   1   2   3   4
-1Test data for running ZONEBUDGET                                                
+1
+ Test data for running ZONEBUDGET                                                
 
      Flow Budget for Zone  1 at Time Step  1 of Stress Period  1
      -----------------------------------------------------------
@@ -93,7 +95,8 @@
                           IN - OUT =   0.23925E-02
 
                Percent Discrepancy =                0.00
-1Test data for running ZONEBUDGET                                                
+1
+ Test data for running ZONEBUDGET                                                
 
      Flow Budget for Zone  2 at Time Step  1 of Stress Period  1
      -----------------------------------------------------------
@@ -128,7 +131,8 @@
                           IN - OUT =   0.20785E-02
 
                Percent Discrepancy =                0.01
-1Test data for running ZONEBUDGET                                                
+1
+ Test data for running ZONEBUDGET                                                
 
      Flow Budget for Zone  3 at Time Step  1 of Stress Period  1
      -----------------------------------------------------------
@@ -161,7 +165,8 @@
                           IN - OUT =   0.12052E-03
 
                Percent Discrepancy =                0.00
-1Test data for running ZONEBUDGET                                                
+1
+ Test data for running ZONEBUDGET                                                
 
      Flow Budget for Zone  4 at Time Step  1 of Stress Period  1
      -----------------------------------------------------------
@@ -196,7 +201,8 @@
                           IN - OUT =   0.00000    
 
                Percent Discrepancy =                0.00
-1Test data for running ZONEBUDGET                                                
+1
+ Test data for running ZONEBUDGET                                                
 
      Flow Budget for Composite Zone A at Time Step  1 of Stress Period  1
      --------------------------------------------------------------------
