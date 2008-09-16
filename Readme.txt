@@ -1,4 +1,4 @@
-               Zonebudget (ZONBUD) - Version: 2.1  April, 2001
+                    Zonebudget (ZONBUD) - Version: 3.0
               Program for computing subregional water budgets
                     for MODFLOW ground-water flow models
 
@@ -10,8 +10,7 @@ provided below.
 
 This version of Zonebudget is packaged for use on personal computers
 using a Microsoft Windows operating system. For invoking Zonebudget,
-the acronym ZONBUD is used. (For version 1.0, the acronym ZONEBDGT was
-used.)
+the acronym ZONBUD is used.
 
 
                             TABLE OF CONTENTS
@@ -30,54 +29,36 @@ The following self-extracting distribution file, containing the software,
 test data sets, and information files, is currently available for
 Microsoft Windows computer systems:
 
-         znbd2_1.exe  - Compiled using Lahey Fortran 95 with source code
-
-The program source code consists of the following file (found in the
-ZONBUD.2_1\src directory):
-
-    ZONBUD.for
-
-Also included in the src directory are several files used by the Lahey
-Automake utility for compiling the program.
-
-File ZONBUD.2_1/doc/zonbud.txt describes the changes to the code,
-since the original version (1.0). Also included in directory
-ZONBUD.2_1/doc is a Portable Document Format (PDF) version of the
-ZONEBUDGET documentatoin (ofr90392.pdf).
-
-The PDF file is readable and printable on various computer platforms using
-Acrobat Reader from Adobe.  The Acrobat Reader is freely available from
-the following World Wide Web sites:
-      http://www.adobe.com/
-      http://www.shareware.com/
+         zonbud3_0.exe
 
 
 B. EXTRACTING FILES
 
-The following are the steps to extract the files from the distribution
-file.
+Extract the files by executing file:
 
-   1. Extract the files by executing file:
+        znbd3_0.exe
 
-        znbd2_1.exe
-
-      When the extraction progrm runs, specify that the files should be
-      restored to directory C:\WRDAPP
+When the extraction progrm runs, the default extraction directory is
+C:\WRDAPP
  
 
-The following directory structure will be created in C:\WRDAPP (the
-contents of each directory are shown to the right):
+The following directory structure will be created in the extraction
+directory:
 
-      ZONBUD.2_1      ; copy of this readme file
-        `-----bin       ; compiled executable and Lahey error file
+      ZONBUD.3_0      ; copy of this readme file
+        `-----bin       ; executable runfile
         `-----doc       ; documentation files
-        `-----src       ; makefile and source code
-        `-----test      ; batch files to run verification tests
-        `-----data      ; standard data sets used in verification tests
+        `-----src       ; source code
+        `-----data      ; test dataset
 
-Notes:
-a) It is recommended that no user files are kept in the ZONBUD.2_1
-   directory structure.
+
+File ZONBUD.3_0\doc\zonbud3.pdf describes the changes to the code,
+since the original version (1.0). Also included in directory
+ZONBUD.3_0\doc is a Portable Document Format (PDF) version of the
+ZONEBUDGET documentatoin (ofr90392.pdf).
+
+It is recommended that no user files are kept in the ZONBUD.3_0
+directory structure.
 
 
 C. COMPILING
@@ -90,7 +71,6 @@ software.  In general, the requirements are a Fortran compiler and
 knowledge about using the compiler.
 
 
-
 D: INSTALLING
 
 To make the ZONBUD program accessible from any directory, the directory
@@ -100,84 +80,68 @@ variable.
 
 E. RUNNING THE SOFTWARE
 
-ZONBUD has been compiled using the Lahey Fortran 95 compiler version 5.6e.
-The program arrays are dimensioned for models having up to 1,000,000 cells.
+ZONBUD has been compiled using the Intel compiler version 10.1.
 
 After ZONBUD is properly installed in a directory that is included in
 your PATH, the program is initiated using the command:  ZONBUD.  The
-program prompts for the following information:
-     1) name of the LISTING FILE for results
-     2) name of the CELL-BY-CELL BUDGET TERMS
-     3) TITLE for use in LISTING FILE
-     4) an option for specifying when budgets are calculated
+details of program operation are provided in file zonbud3.pdf in the
+doc directory.
 
-The runfile for version 2.1 of ZONBUD for use on personal computers has
-been created using the LF95 compiler options that will allow ZONBUD to
-read the unstructured unformatted budget files created by the runfile
-for version 1.2 of MODFLOW-2000 (MF2K.EXE) that is distributed by the
-USGS on the web. Other compilers could be used to compile ZONBUD and
-MF2K provided that they cause unformatted files to be written in the
-same unstructured manner.  However, if options are used that cause a
-compiler to generate structured binary files, then it is generally
-necessary that ZONBUD be compiled with the same compiler used to
-compile MODFLOW.
+The runfile for version 3.0 of ZONBUD for use on personal computers has
+been created using the compiler options that will allow ZONBUD to
+read the unstructured unformatted budget files created by current
+versions of MODFLOW-2000 and MODFLOW-2005 distributed on USGS web
+pages. Other compilers could be used to compile MODFLOW provided that
+they cause unformatted files to be written in the same unstructured
+manner.  However, if compiler options are used that cause MODFLOW to
+generate structured binary files, then it is necessary that ZONBUD be
+compiled with the same compiler used to compile MODFLOW.
 
 Starting with MODFLOW-2000 version 1.2, the USGS-distributed MODFLOW
-runfile for personal computers is compiled by the Lahey 95 compiler
-using the above-mentioned options for writing unstructured unformatted
-files.  If you are using an earlier version of a MODFLOW runfile
-produced by the USGS, then ZONBUD will not be able to read the
-unformatted budget files.
+runfile for personal computers is compiled using the above-mentioned
+options for writing unstructured unformatted files.  If you are using
+an earlier version of a MODFLOW runfile produced by the USGS, then the
+provided ZONBUD runfile will not be able to read the unformatted budget
+files.
 
 
 F. TESTING
 
-Test data sets are provided to verify that the program is correctly
-installed and running on the system.  The tests may also be looked at
-as examples of how to use the program.  The directory ZONBUD.2_1\test
-contains batch files to run the tests.  The directory ZONBUD.2_1\data
-contains the input data and expected results for each test.  Run the
-tests in the ZONBUD.2_1\test directory using the command:
+A test data set is provided to verify that the program is correctly
+installed and running on the system.  The directory ZONBUD.3_0\data
+contains the input data and expected results for the test.
 
-   test
+The test is the example problem in the original Zonebudget
+documentation report, OFR 90-392.
 
-After the tests are completed, the results can be compared to the
-expected results.  To clean-up after the tests, type the command:
+The MODFLOW input data files are
+               Name File to designate files       zbtest.nam
+               BAS6 Package                       zbtest.ba6
+               BCF6 Package                       zbtest.bc6
+               Discretization file                zbtest.dis
+               SIP5 Package                       zbtest.sip
+               Output Control                     zbtest.oc
+               RCH5 Package                       zbtest.rch
+               WEL5 Package                       zbtest.wel
 
-   clean
+The MODFLOW output files are
+               cell-by-cell flow data             zbtest.bud
+               Listing file                       zbtest.lst
 
-The tests are described in the table below.  Test is the test number,
-program is the program used to run the test, and the usage column
-indicates how a file is used, with i for input, o for output, and
-i/o for both input and output.
+Run Zonebudget and enter the following responses to the prompts:
 
-IMPORTANT NOTE: the cell-by-cell data file (zbtest.bud) was generated
-using mf2k version 1.2 as distributed on the USGS web page. The input
-data for MODFLOW are in zbtest.nam and associated files.  zbtest.bud is
-an unformatted file that is compiler and platform dependent; therefore,
-if you compile ZONBUD with a different compiler, you may need to
-recreate the budget file using a version of MODFLOW compiled with the
-same compiler.  The test.bat file does not run MODFLOW to
-generate the zbtest.bud; you must do this on your own.
+The name of the LISTING File for results:                   zbtest.zblst
+The name of the file containing CELL-BY-CELL BUDGET TERMS:  zbtest.bud
+TITLE:                                                      Test
+The name of the ZONE INPUT FILE:                            zbtest.zon
+Option for specifying when budgets are calculated:          A
 
-test  program  description of test and files      file name & usage
-----  -------  ---------------------------------  -----------------
-  1   modflow  Runs the example problem in OFR 90-392
 
-               Name File to designate files       zbtest.nam      i
-               BAS6 Package                       zbtest.ba6      i
-               BCF6 Package                       zbtest.bc6      i
-               Discretization file                zbtest.dis      i
-               SIP5 Package                       zbtest.sip      i
-               Output Control                     zbtest.oc       i
-               RCH5 Package                       zbtest.rch      i
-               WEL5 Package                       zbtest.wel      i
-               cell-by-cell flow data             zbtest.bud      o
-               Listing of results                 zbtest_m.lst    o
+When done, look in file zbtest.zblst for the results.
 
-      ZONBUD  Runs the example problem in OFR 90-392
-
-               cell-by-cell flow data             zbtest.bud      i
-               ZONE input file                    zbtest.zon      i
-               response file for program prompts  go              i
-               Listing of results                 zbtest.lst      o
+The cell-by-cell data file (zbtest.bud) was generated using MODFLOW-2005
+version 1.5 as distributed on the USGS web page.  zbtest.bud is an
+unstructured unformatted file that is compiler and platform dependent;
+However, if you compile ZONBUD using compiler options that create
+structured unformatted files, you will need to recreate the budget file
+using a version of MODFLOW compiled with the same compiler. 

@@ -1,4 +1,4 @@
-LIST 1 zbtest_m.lst
+LIST 1 zbtest.lst
 BAS6         2 ZBTEST.ba6
 BCF6        11 ZBTEST.bc6
 WEL 12 zbtest.wel

@@ -1,8 +1,0 @@
-QUITONERROR
-
-FILES=*.for
-COMPILE=@lf95 -c -nchk -pca -stchk -trace -w %fi -winconsole
-
-LINK=@lf95 @%rf -exe %ex -winconsole
-TARGET=zonbud.exe
-

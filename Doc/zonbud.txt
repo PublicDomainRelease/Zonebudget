@@ -21,10 +21,17 @@ METHOD
        cells in each specified zone.
 
 HISTORY
+       Version 3.0 9/19/2008 -- updated to automatically read single
+          precision and double precision cell-by-cell budget files.  The
+          ability to write data into a comma-delimited file for use by
+          a spreadsheet program was added also.  The input for the zone
+          file has been updated to allow free format.
+
        Version 2.1 2000/04/18 - updated to allow specifiers for opening
           unformatted files to be easily modified.  The personal computer
           version of the code is being distributed using unstructured
           unformatted files.
+
        Version 2.0 2000/04/24 - updated to read compact budget files that
           MODFLOW-96 and MODFLOW-2000 can optionally write.  Compact budget
           files use less disk space.  They also include additional information
@@ -65,26 +72,29 @@ OUTPUT OPTIONS
        zone.
 
 SYSTEM REQUIREMENTS
-       ZONBUD is written in Fortran 77.  By default, the software is
-       dimensioned for use with models having up to 1,000,000 cells.
-       Generally, the program is easily installed on most computer systems.
-       The code has been used on UNIX-based and Microsoft Windows based
-       computers.
+       ZONBUD is written in Fortran 90.  Generally, the program is easily
+       installed on most computer systems. The code has been used on
+       UNIX-based and Microsoft Windows based computers.
 
 DOCUMENTATION
        Harbaugh, A.W., 1990, A computer program for calculating subregional
           water budgets using results from the U.S. Geological Survey
           modular three-dimensional ground-water flow model: U.S.
           Geological Survey Open-File Report 90-392, 46 p.
+          
+       Documentation about changes to the version 3 code changes are
+       contained in file zonbud3.pdf, which is distributed with the
+       Zonebudget Version 3 code.
 
 RELATED DOCUMENTATION
+       Harbaugh, A.W., 2005, MODFLOW-2005, the U.S. Geological Survey modular
+          ground-water model -- the Ground-Water Flow Process: U.S. Geological
+          Survey Techniques and Methods 6-A16, variously p.
+
        McDonald, M.G., and Harbaugh, A.W., 1988, A modular three-
           dimensional finite-difference ground-water flow model: U.S.
           Geological Survey Techniques of Water-Resources Investigations,
           book 6, chap. A1, 586 p.
-
-       Harbaugh, A.W., 1990, A simple contouring program for gridded data:
-          U.S. Geological Survey Open-File Report 90-144, 37 p.
 
        Harbaugh, A.W., and McDonald, M.G., 1996, User's documentation for
           MODFLOW-96, an update to the U.S. Geological Survey modular
@@ -94,12 +104,7 @@ RELATED DOCUMENTATION
        Harbaugh, A.W., Banta, E.R., Hill, M.C., and McDonald, M.G., 1996,
           MODFLOW-2000, the U.S. Geological Survey modular ground-water
           model -- user guide to modularization concepts and the ground-water
-          flow process: U.S. Geological Survey Open-File Report 00-92
-
-TRAINING
-       Modeling of Ground-Water Flow Using Finite-Difference Methods
-       (GW2096TC), offered annually at the USGS National Training Center,
-       makes use of ZONBUD.
+          flow process: U.S. Geological Survey Open-File Report 00-92.
 
 CONTACTS
        Operation:
@@ -110,23 +115,3 @@ CONTACTS
           Reston, VA 20192
 
           harbaugh@usgs.gov
-
-
-       If you would like to obtain the price of and (or) order paper copies
-       of USGS reports, contact the USGS Branch of Information Services at:
-
-                  U.S. Geological Survey
-                  Branch of Information Services
-                  Denver Federal Center, Box 25286
-                  Denver CO 80225-0286
-
-       To inquire about Open-File Reports or Water-Resources Investigations
-       Reports:
-                  Tel: 303-202-4210; Fax 303-202-4695
-
-       To inquire about other USGS reports:
-                  Tel: 303-202-4700; Fax 303-202-4693
-
-SEE ALSO
-       modflow(1) - Modular three-dimensional ground-water flow
-                    model
