@@ -51,7 +51,7 @@ C-----          used.
       DIMENSION VAL(20)
       INCLUDE 'openspec.inc'
 C     ------------------------------------------------------------------
-      VERSON='ZONEBUDGET version 3.00'
+      VERSON='ZONEBUDGET version 3.01'
 C
 C-----DEFINE INPUT AND OUTPUT UNITS AND INITIALIZE OTHER VARIABLES
       INZN1=10
@@ -298,7 +298,7 @@ C-----DECIDE WHETHER OR NOT TO CALCULATE THE BUDGET FOR THIS TIME STEP
          ELSE IF(METHOD.EQ.'P') THEN
 102         WRITE(*,105) KSTP,KPER
 105         FORMAT(1X,'Do you want to calculate budgets for time step',
-     1             I3,' in stress period',I3,' (Y/N)?')
+     1             I4,' in stress period',I4,' (Y/N)?')
             READ(*,'(A)') IANS
             IF(IANS.EQ.'Y' .OR. IANS.EQ.'y') THEN
                ICALC=1
@@ -316,8 +316,8 @@ C-----DECIDE WHETHER OR NOT TO CALCULATE THE BUDGET FOR THIS TIME STEP
          END IF
          IF(ICALC.EQ.0) THEN
             WRITE(*,121) KSTP,KPER
-121         FORMAT(' Skipping the budget for time step',I3,
-     1       ' in stress period',I3)
+121         FORMAT(' Skipping the budget for time step',I4,
+     1       ' in stress period',I4)
          ELSE
             MSUM=1
             DO 210 I=1,NZDIM
@@ -331,8 +331,8 @@ C-----DECIDE WHETHER OR NOT TO CALCULATE THE BUDGET FOR THIS TIME STEP
             VBZNFL(K,J,I)=DZERO
 220         CONTINUE
             WRITE(*,221) KSTP,KPER
-221         FORMAT(' Computing the budget for time step',I3,
-     1       ' in stress period',I3)
+221         FORMAT(' Computing the budget for time step',I4,
+     1       ' in stress period',I4)
          END IF
       END IF
 C
@@ -1170,8 +1170,8 @@ C
 C
 C    ---FORMATS---
 C
-  601 FORMAT(5X,'Flow Budget for Zone',I4,
-     1  ' at Time Step',I3,' of Stress Period',I3/5X,59('-'))
+  601 FORMAT(5X,'Flow Budget for Zone',I3,
+     1  ' at Time Step',I4,' of Stress Period',I4/5X,61('-'))
   602 FORMAT(23X,'Budget Term',5X,'Flow (L**3/T)'/
      1     23X,29('-')//13X,'IN:'/13X,'---')
   603 FORMAT(18X,A,' =',G14.5)
@@ -1327,7 +1327,7 @@ C
 C    ---FORMATS---
 C
   601 FORMAT(5X,'Flow Budget for Composite Zone ',A,
-     1  ' at Time Step',I3,' of Stress Period',I3/5X,77('-'))
+     1  ' at Time Step',I4,' of Stress Period',I4/5X,79('-'))
   602 FORMAT(23X,'Budget Term',5X,'Flow (L**3/T)'/
      1     23X,29('-')//13X,'IN:'/13X,'---')
   603 FORMAT(18X,A,' =',G14.5)
@@ -1343,8 +1343,8 @@ C
       END
       SUBROUTINE BUDGETPRECISION(IU,NCOL,NROW,NLAY)
 C     ******************************************************************
-C  Determine single or double precision file type for a MODFLOW
-C  budget file:  0=unrecognized, 1=single, 2=double.
+C     Determine single or double precision file type for a MODFLOW
+C     budget file:  0=unrecognized, 1=single, 2=double.
 C     ******************************************************************
       USE ZONBUDMODULE
       DOUBLE PRECISION DELTD,PERTIMD,TOTIMD,VALD
@@ -1361,7 +1361,6 @@ C  SINGLE check
         READ(IU,ERR=50,END=50) ICODE,DELT,PERTIM,TOTIM
       END IF
 14    FORMAT(1X,I10,' layers',I10,' rows',I10,' columns')
-      NRC=NCOL*NROW*NLAY
       IF(NCOL.LT.1 .OR. NROW.LT.1 .OR. NLAY.LT.1) GO TO 100
       IF(NCOL.GT.100000000 .OR.NROW.GT.100000000 .OR.
      1                     NLAY.GT.100000000) GO TO 100
@@ -1369,6 +1368,7 @@ C  SINGLE check
      1                 NROW*NLAY.GT.100000000) GO TO 100
       ALLOCATE(BUFF(NCOL,NROW,NLAY))
       ALLOCATE (BUFFD(NCOL,NROW,NLAY))
+      NODES=NCOL*NROW*NLAY
 C
 C  Read data depending on ICODE.  ICODE 0,1, or 2 are the only allowed
 C  values because the first budget terms must be from the internal
@@ -1377,9 +1377,11 @@ C  flow package (BCF,LPF, or HUF).
          READ(IU,ERR=50,END=50) BUFF
       ELSE IF(ICODE.EQ.2) THEN
          READ(IU,ERR=50,END=50) NLST
+         IF(NLST.LT.0) GO TO 50
          IF(NLST.GT.0) THEN
             DO 22 N=1,NLST
             READ(IU,END=50,ERR=50) ICELL,VAL
+            IF(ICELL.LE.0 .OR. ICELL.GT.NODES) GO TO 50
 22          CONTINUE
          END IF
       ELSE
@@ -1414,9 +1416,11 @@ C  flow package (BCF,LPF, or HUF).
          READ(IU,ERR=100,END=100) BUFFD
       ELSE IF(ICODE.EQ.2) THEN
          READ(IU,ERR=100,END=100) NLST
+         IF(NLST.LT.0) GO TO 100
          IF(NLST.GT.0) THEN
             DO 72 N=1,NLST
             READ(IU,END=100,ERR=100) ICELL,VALD
+            IF(ICELL.LE.0 .OR. ICELL.GT.NODES) GO TO 100
 72          CONTINUE
          END IF
       ELSE
@@ -1618,7 +1622,7 @@ C-----PRINT THE TITLE
   601   FORMAT('Time Step,',I3,',Stress Period,',I3,',',A,',')
       ELSE
         WRITE(IUCSV,602) KSTP,KPER,TOTIMD,TRIM(TITLE)
-  602   FORMAT('Time Step,',I3,',Stress Period,',I3,
+  602   FORMAT('Time Step,',I4,',Stress Period,',I4,
      1              ',Sim. Time,',1PE13.6,',',A,',')
       END IF
 C
@@ -1779,6 +1783,12 @@ C-----PRINT COLUMN HEADERS
         FIELD(NFIELD)='   STEP'
         NFIELD=NFIELD+1
         FIELD(NFIELD)='   ZONE         '
+C  Add storage term if none exists -- necessary in case 1st stress period
+C  is steady state and others are transient
+        IF(VBNM(1).EQ.'   CONSTANT HEAD') THEN
+          NFIELD=NFIELD+1
+          FIELD(NFIELD)='         STORAGE'
+        END IF
         DO 72 M=1,MTOT
         NFIELD=NFIELD+1
         FIELD(NFIELD)=VBNM(M)
@@ -1787,6 +1797,12 @@ C-----PRINT COLUMN HEADERS
         FIELD(NFIELD)='From Other Zones'
         NFIELD=NFIELD+1
         FIELD(NFIELD)='Total IN        '
+C  Add storage term if none exists -- necessary in case 1st stress period
+C  is steady state and others are transient
+        IF(VBNM(1).EQ.'   CONSTANT HEAD') THEN
+          NFIELD=NFIELD+1
+          FIELD(NFIELD)='         STORAGE'
+        END IF
         DO 73 M=1,MTOT
         NFIELD=NFIELD+1
         FIELD(NFIELD)=VBNM(M)
@@ -1861,6 +1877,12 @@ C
       WRITE(FIELD(NFIELD),'(I16)') KSTP
       NFIELD=NFIELD+1
       WRITE(FIELD(NFIELD),'(I16)') LSTZON(N)
+C  Print storage term if none exists -- necessary in case 1st stress period
+C  is steady state and others are transient
+      IF(VBNM(1).EQ.'   CONSTANT HEAD') THEN
+        NFIELD=NFIELD+1
+        WRITE(FIELD(NFIELD),81) 0.0
+      END IF
       DO 82 I=1,MTOT
       NFIELD=NFIELD+1
       WRITE(FIELD(NFIELD),81) VBVL(1,I,N)
@@ -1870,6 +1892,12 @@ C
       WRITE(FIELD(NFIELD),81) TOTZONIN
       NFIELD=NFIELD+1
       WRITE(FIELD(NFIELD),81) TOTIN
+C  Print storage term if none exists -- necessary in case 1st stress period
+C  is steady state and others are transient
+      IF(VBNM(1).EQ.'   CONSTANT HEAD') THEN
+        NFIELD=NFIELD+1
+        WRITE(FIELD(NFIELD),81) 0.0
+      END IF
       DO 84 I=1,MTOT
       NFIELD=NFIELD+1
       WRITE(FIELD(NFIELD),81) VBVL(2,I,N)

@@ -1,4 +1,4 @@
-                    Zonebudget (ZONBUD) - Version: 3.0
+                    Zonebudget (ZONBUD) - Version: 3.01
               Program for computing subregional water budgets
                     for MODFLOW ground-water flow models
 
@@ -29,14 +29,14 @@ The following self-extracting distribution file, containing the software,
 test data sets, and information files, is currently available for
 Microsoft Windows computer systems:
 
-         zonbud3_0.exe
+         zonbud3_01.exe
 
 
 B. EXTRACTING FILES
 
 Extract the files by executing file:
 
-        znbd3_0.exe
+        zonbud3_01.exe
 
 When the extraction progrm runs, the default extraction directory is
 C:\WRDAPP
@@ -45,19 +45,19 @@ C:\WRDAPP
 The following directory structure will be created in the extraction
 directory:
 
-      ZONBUD.3_0      ; copy of this readme file
-        `-----bin       ; executable runfile
-        `-----doc       ; documentation files
-        `-----src       ; source code
-        `-----data      ; test dataset
+      ZONBUD.3_01      ; copy of this readme file
+        |-----bin       ; executable runfile
+        |-----doc       ; documentation files
+        |-----src       ; source code
+        |-----data      ; test dataset
 
 
-File ZONBUD.3_0\doc\zonbud3.pdf describes the changes to the code,
+File ZONBUD.3_01\doc\zonbud3.pdf describes the changes to the code,
 since the original version (1.0). Also included in directory
-ZONBUD.3_0\doc is a Portable Document Format (PDF) version of the
+ZONBUD.3_01\doc is a Portable Document Format (PDF) version of the
 ZONEBUDGET documentatoin (ofr90392.pdf).
 
-It is recommended that no user files are kept in the ZONBUD.3_0
+It is recommended that no user files are kept in the ZONBUD.3_01
 directory structure.
 
 
@@ -80,14 +80,14 @@ variable.
 
 E. RUNNING THE SOFTWARE
 
-ZONBUD has been compiled using the Intel compiler version 10.1.
+ZONBUD has been compiled using the Intel compiler version 11.0.
 
 After ZONBUD is properly installed in a directory that is included in
 your PATH, the program is initiated using the command:  ZONBUD.  The
 details of program operation are provided in file zonbud3.pdf in the
 doc directory.
 
-The runfile for version 3.0 of ZONBUD for use on personal computers has
+The runfile for version 3.01 of ZONBUD for use on personal computers has
 been created using the compiler options that will allow ZONBUD to
 read the unstructured unformatted budget files created by current
 versions of MODFLOW-2000 and MODFLOW-2005 distributed on USGS web
@@ -108,7 +108,7 @@ files.
 F. TESTING
 
 A test data set is provided to verify that the program is correctly
-installed and running on the system.  The directory ZONBUD.3_0\data
+installed and running on the system.  The directory ZONBUD.3_01\data
 contains the input data and expected results for the test.
 
 The test is the example problem in the original Zonebudget

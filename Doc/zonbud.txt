@@ -21,6 +21,16 @@ METHOD
        cells in each specified zone.
 
 HISTORY
+       Version 3.01 12/18/2009 -- updated to fix a problem in the csv2
+          output file when a simulation has both transient and
+          steady-state stress periods.  In this situation, the STORAGE
+          column label was absent if the first stress period is steady
+          state; however, the storage values were written for the
+          transient time steps. The updated code always includes a
+          storage column label, and the storage value is 0 for the
+          steady-state time steps.  Also reduced the time needed to
+          determine that a budget file is double precision.
+
        Version 3.0 9/19/2008 -- updated to automatically read single
           precision and double precision cell-by-cell budget files.  The
           ability to write data into a comma-delimited file for use by
